@@ -31,5 +31,4 @@ The **Smart Campus System** is an IoT-based project designed to automate and sec
 | **LCD Display** | Displays access status ("Access Granted" or "Access Denied") |
 | **Servo Motor** | Controls the gate barrier mechanism |
 
-## System Architecture
 

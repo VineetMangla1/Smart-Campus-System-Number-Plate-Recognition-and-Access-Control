@@ -75,8 +75,8 @@ void handleUpload() {
   } 
   else if (upload.status == UPLOAD_FILE_WRITE) {
     if (imageSize + upload.currentSize <= MAX_IMAGE_SIZE) {
-      memcpy(&imageBuffer[imageSize], upload.buf, upload.currentSize);
-      imageSize += upload.currentSize;
+      memcpy(&imageBuffer[imageSize], upload.buf, upload.currentSize); //copy incoming bytes to buffer
+      imageSize += upload.currentSize; 
     } else {
       Serial.println("Image too large!");
       server.send(500, "text/plain", "Image too large");
@@ -122,7 +122,7 @@ void uploadToAzure(uint8_t* data, size_t len) {
 
 // ====== Check Result File from Azure (READ from txtfile/result.txt) ======
 int getDetectionResult() {
-  if (imageUploaded && !checkDone) { // 10 seconds after upload
+  if (imageUploaded && !checkDone) { // 15 seconds after upload
     WiFiClientSecure client;
     client.setInsecure();  // Only for testing
 

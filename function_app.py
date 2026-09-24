@@ -10,12 +10,13 @@ import os
 
 app = func.FunctionApp()
 
-#Trigger activates when new image is uploaded
+#Trigger activates when new image(myblob) is uploaded
 @app.blob_trigger(arg_name="myblob", path="photos", connection="iotproject353843_STORAGE")
 def NumberPlate(myblob: func.InputStream):
     logging.info(f"Triggered by blob: {myblob.name}, Size: {myblob.length} bytes")
 
     blob_bytes = myblob.read()
+    #Bytes to numpy array
     npimg = np.frombuffer(blob_bytes, np.uint8)
     img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
@@ -27,6 +28,7 @@ def NumberPlate(myblob: func.InputStream):
     contours = imutils.grab_contours(keypoints)
     contours = sorted(contours, key=cv2.contourArea, reverse=True)[:10]
 
+    #No plate initially
     location = None
     for contour in contours:
         approx = cv2.approxPolyDP(contour, 10, True)
@@ -102,10 +104,10 @@ def insert_to_db(blob_name, detected_text):
 def write_result_to_blob(result):
     try:
         connect_str = os.getenv("AzureWebJobsStorage")  # Same conn string as in local.settings.json
-        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-        container_client = blob_service_client.get_container_client("txtfile")
-        blob_client = container_client.get_blob_client("result.txt")
-        blob_client.upload_blob(str(result), overwrite=True)
+        blob_service_client = BlobServiceClient.from_connection_string(connect_str)  #Azure Blob Storage
+        container_client = blob_service_client.get_container_client("txtfile") # txtfile container
+        blob_client = container_client.get_blob_client("result.txt") #result.txt file
+        blob_client.upload_blob(str(result), overwrite=True) 
         logging.info(f"Wrote result {result} to result.txt in txtfile container.")
     except Exception as e:
         logging.error(f"Error writing result to blob: {e}")

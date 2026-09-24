@@ -10,6 +10,7 @@ import os
 
 app = func.FunctionApp()
 
+#Trigger activates when new image is uploaded
 @app.blob_trigger(arg_name="myblob", path="photos", connection="iotproject353843_STORAGE")
 def NumberPlate(myblob: func.InputStream):
     logging.info(f"Triggered by blob: {myblob.name}, Size: {myblob.length} bytes")
